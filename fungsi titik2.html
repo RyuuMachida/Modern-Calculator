@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program Sederhana</title>
+    <style>
+        html {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+        }
+
+        html::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+
+        body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbars untuk semua element */
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            /*ini body untuk pake background gambar*/
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            display: flex;
+            background: url('bgg.jpg'), black;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        bodyr {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(-45deg, #000000, #41428f, #aabde7, #1b2f52);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+
+        .calculator {
+            width: 340px;
+            background-color: #2c2c2c;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .header button {
+            background: #3d85c6;
+            color: white;
+            font-weight: bold;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+            transition: background 0.3s;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .header button:hover {
+            background: #5ca0e6;
+        }
+
+        .display {
+            width: 96%;
+            height: 40px;
+            margin-bottom: 10px;
+            text-align: right;
+            padding: 5px;
+            font-size: 20px;
+            color: whitesmoke;
+            background-color: #3a3a3a;
+            border-radius: 6px;
+        }
+
+        .currency-display {
+            width: 96%;
+            margin-bottom: 10px;
+            padding: 15px;
+            font-size: 14px;
+            color: #ffd700;
+            background: linear-gradient(135deg, #1e1e1e, #2b2b2b);
+            border-radius: 10px;
+            border: 1px solid #444;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+            display: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .currency-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffc107;
+            text-transform: uppercase;
+        }
+
+        .currency-input {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 10px;
+            text-align: right;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            transition: border 0.3s;
+        }
+
+        .currency-input:focus {
+            border: 1px solid #ffd700;
+            outline: none;
+        }
+
+        .currency-result {
+            width: 100%;
+            height: 40px;
+            text-align: right;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ffae;
+            background-color: #1f1f1f;
+            border: 1px solid #555;
+            border-radius: 8px;
+            box-shadow: inset 0 0 5px rgba(0, 255, 170, 0.2);
+        }
+
+        .exchange-rate-info {
+            text-align: center;
+            font-size: 12px;
+            color: #aaaaaa;
+            margin-top: 12px;
+            font-style: italic;
+        }
+
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 8px;
+        }
+
+        .button {
+            padding: 18px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #ff9500;
+            border: none;
+            border-radius: 12px;
+            color: rgb(255, 255, 255);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .button strong {
+            color: #000000c2;
+        }
+
+        .button:hover {
+            background-color: burlywood;
+            transform: scale(1.01);
+            box-shadow: 0 0 10px rgba(43, 35, 35, 0.2);
+        }
+
+        .equal {
+            grid-column: span 4;
+            background-color: #3d85c6;
+        }
+
+        .equal:hover {
+            background-color: #5ca0e6;
+        }
+
+        /* Popup Riwayat di dalam kalkulator */
+        .history-popup {
+            position: absolute;
+            top: 495px;
+            left: 0;
+            width: 100%;
+            max-height: 200px;
+            background: #1e1e1e;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            overflow-y: auto;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+            z-index: 10;
+        }
+
+        .history-popup h3 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 16px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .history-popup ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .history-popup li {
+            padding: 5px;
+            border-bottom: 1px solid #444;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: transparent;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #ff9500;
+        }
+
+        .loading {
+            text-align: center;
+            color: #ffd700;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+        <!-- Header dengan tombol Riwayat dan Kurs Tukar -->
+        <div class="header">
+            <span style="color:white; font-size:16px;">Kalkulator</span>
+            <div>
+                <button style="background-color: #2a2a2a;" onclick="toggleCurrency()">Kurs Tukar</button>
+                <button style="background-color: #2a2a2a;" onclick="toggleHistory()">Riwayat</button>
+            </div>
+        </div>
+
+
+        <!-- Display kalkulator -->
+        <input type="text" class="display" id="display" disabled>
+
+        <!-- Currency Converter Display -->
+        <div class="currency-display" id="currencyDisplay">
+            <div class="currency-labels">
+                <span>IDR (Rupiah)</span>
+                <span>USD (Dollar)</span>
+            </div>
+            <div style="text-align: center; margin-bottom: 10px;">
+                <button onclick="toggleConversionMode()"
+                    style="padding: 5px 10px; background-color: #444; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                    Tukar ke USD → IDR
+                </button>
+            </div>
+            <input type="number" class="currency-input" id="idrInput" placeholder="Masukkan nilai IDR"
+                oninput="convertCurrency()">
+            <input type="text" class="currency-result" id="usdResult" placeholder="Hasil USD" readonly>
+            <div class="exchange-rate-info" id="exchangeRateInfo">
+                1 USD = 15,500 IDR
+            </div>
+        </div>
+
+        <div class="buttons">
+            <div class="button" onclick="appendToDisplay('7')"><strong>7</strong> <br> <small>Seven</small></div>
+            <div class="button" onclick="appendToDisplay('8')"><strong>8</strong> <br> <small>Eight</small></div>
+            <div class="button" onclick="appendToDisplay('9')"><strong>9</strong> <br> <small>Nine</small></div>
+            <div class="button" onclick="clearDisplay()">C</div>
+            <div class="button" onclick="appendToDisplay('4')"><strong>4</strong> <br> <small>Four</small></div>
+            <div class="button" onclick="appendToDisplay('5')"><strong>5</strong> <br> <small>Five</small></div>
+            <div class="button" onclick="appendToDisplay('6')"><strong>6</strong> <br> <small>Six</small></div>
+            <div class="button" onclick="appendToDisplay('*')">×</div>
+            <div class="button" onclick="appendToDisplay('1')"><strong>1</strong> <br> <small>One</small></div>
+            <div class="button" onclick="appendToDisplay('2')"><strong>2</strong> <br> <small>Two</small></div>
+            <div class="button" onclick="appendToDisplay('3')"><strong>3</strong> <br> <small>Three</small></div>
+            <div class="button" onclick="appendToDisplay('/')">÷</div>
+            <div class="button" onclick="appendToDisplay('0')"><strong>0</strong> <br> <small>Zero</small></div>
+            <div class="button" onclick="appendToDisplay(',')">,</div>
+            <div class="button" onclick="appendToDisplay('+')">+</div>
+            <div class="button" onclick="appendToDisplay('-')">-</div>
+            <div class="button equal" onclick="calculate()">=</div>
+        </div>
+        <!-- Popup Riwayat -->
+        <div class="history-popup" id="historyPopup">
+            <button class="close-btn" onclick="toggleHistory()">×</button>
+            <h3>Riwayat</h3>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+
+    <audio id="bgMusic" src="bgmusic.mp3"></audio>
+
+    <script>
+        const display = document.getElementById('display');
+        const historyPopup = document.getElementById('historyPopup');
+        const historyList = document.getElementById('historyList');
+        const currencyDisplay = document.getElementById('currencyDisplay');
+        const idrInput = document.getElementById('idrInput');
+        const usdResult = document.getElementById('usdResult');
+        const exchangeRateInfo = document.getElementById('exchangeRateInfo');
+        function toggleConversionMode() {
+            isIdrToUsd = !isIdrToUsd;
+
+            const labelLeft = document.querySelector('.currency-labels span:first-child');
+            const labelRight = document.querySelector('.currency-labels span:last-child');
+            const toggleBtn = document.querySelector('.currency-display button');
+
+            if (isIdrToUsd) {
+                labelLeft.textContent = 'IDR (Rupiah)';
+                labelRight.textContent = 'USD (Dollar)';
+                toggleBtn.textContent = 'Tukar ke USD → IDR';
+                idrInput.placeholder = 'Masukkan nilai IDR';
+            } else {
+                labelLeft.textContent = 'USD (Dollar)';
+                labelRight.textContent = 'IDR (Rupiah)';
+                toggleBtn.textContent = 'Tukar ke IDR → USD';
+                idrInput.placeholder = 'Masukkan nilai USD';
+            }
+
+            // Clear input & result
+            idrInput.value = '';
+            usdResult.value = '';
+        }
+        
+        let isIdrToUsd = true; // mode default
+        let historyData = [];
+        let currencyVisible = false;
+
+        // Current USD to IDR exchange rate (you can update this or fetch from API)
+        const USD_TO_IDR_RATE = 15500;
+
+        function convertCurrency() {
+            if (isIdrToUsd) {
+                const idrValue = parseFloat(idrInput.value) || 0;
+                const usdValue = idrValue / USD_TO_IDR_RATE;
+
+                if (idrValue === 0) {
+                    usdResult.value = '';
+                } else {
+                    usdResult.value = usdValue.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6
+                    });
+                }
+            } else {
+                const usdValue = parseFloat(idrInput.value) || 0;
+                const idrValue = usdValue * USD_TO_IDR_RATE;
+
+                if (usdValue === 0) {
+                    usdResult.value = '';
+                } else {
+                    usdResult.value = idrValue.toLocaleString('id-ID', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+            }
+        }
+
+        function formatNumberIndonesian(value) {
+            if (!value) return '';
+
+            let stringValue = value.toString();
+
+            // Pisahkan integer dan desimal berdasarkan koma
+            let parts = stringValue.split(',');
+            let integer = parts[0];
+            let decimal = parts[1];
+
+            // Format integer dengan titik setiap 3 digit dari belakang
+            integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            // Gabungkan kembali dengan koma untuk desimal
+            return decimal !== undefined ? integer + ',' + decimal : integer;
+        }
+
+        function appendToDisplay(value) {
+            playMusicOnce();
+
+            if (currencyVisible) {
+                if (value >= '0' && value <= '9' || value === ',') {
+                    idrInput.value += value;
+                    convertCurrency();
+                }
+            } else {
+                if (display.value === '') {
+                    if (value === '*' || value === '/' || value === '+') {
+                        return;
+                    }
+                }
+
+                // Cek jika input adalah koma untuk desimal
+                if (value === ',' && display.value.includes(',')) {
+                    return;
+                }
+
+                // Hapus format lama sebelum menambah input baru
+                let rawValue = display.value.replace(/\./g, '');
+                rawValue += value;
+
+                // Format ulang dan tampilkan
+                display.value = formatNumberIndonesian(rawValue);
+            }
+        }
+
+        function calculate() {
+            try {
+                // Hapus format titik ribuan dan ganti koma dengan titik untuk evaluasi
+                let expression = display.value
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/\./g, '')  // Hapus titik ribuan
+                    .replace(/,/g, '.');  // Ganti koma desimal dengan titik
+
+                let result = eval(expression);
+
+                if (display.value !== '') {
+                    historyData.unshift(`${display.value} = ${formatNumberIndonesian(result.toString().replace('.', ','))}`);
+                    updateHistory();
+                }
+
+                // Format hasil dengan sistem Indonesia
+                display.value = formatNumberIndonesian(result.toString().replace('.', ','));
+            } catch (error) {
+                display.value = 'I love You 💗';
+            }
+        }
+
+
+        function clearDisplay() {
+            if (currencyVisible) {
+                // Clear currency inputs
+                idrInput.value = '';
+                usdResult.value = '';
+            } else {
+                // Clear calculator display
+                display.value = '';
+            }
+        }
+
+        function toggleHistory() {
+            historyPopup.style.display = (historyPopup.style.display === 'block') ? 'none' : 'block';
+            // Hide currency display when showing history
+            if (historyPopup.style.display === 'block') {
+                currencyDisplay.style.display = 'none';
+                display.style.display = 'block';
+                currencyVisible = false;
+            }
+        }
+
+        function toggleCurrency() {
+            currencyVisible = !currencyVisible;
+            if (currencyVisible) {
+                // Tampilkan kurs tukar, sembunyikan display kalkulator
+                currencyDisplay.style.display = 'block';
+                display.style.display = 'none';
+                historyPopup.style.display = 'none';
+                // Clear inputs when opening
+                idrInput.value = '';
+                usdResult.value = '';
+            } else {
+                // Tampilkan display kalkulator, sembunyikan kurs tukar
+                currencyDisplay.style.display = 'none';
+                display.style.display = 'block';
+            }
+        }
+
+        function updateHistory() {
+            historyList.innerHTML = '';
+            historyData.forEach(item => {
+                let li = document.createElement('li');
+                li.textContent = item;
+                historyList.appendChild(li);
+            });
+        }
+
+        // Tambahan: fungsi backspace untuk kurs tukar
+        function backspace() {
+            if (currencyVisible) {
+                idrInput.value = idrInput.value.slice(0, -1);
+                convertCurrency();
+            }
+        }
+
+        // Event listener untuk keyboard
+        document.addEventListener('keydown', function (e) {
+            if (currencyVisible) {
+                if (e.key >= '0' && e.key <= '9') {
+                    idrInput.value += e.key;
+                    convertCurrency();
+                    e.preventDefault();
+                } else if (e.key === ',' || e.key === '.') {  // Terima koma atau titik untuk desimal
+                    if (!idrInput.value.includes(',')) {
+                        idrInput.value += ',';
+                        convertCurrency();
+                    }
+                    e.preventDefault();
+                } else if (e.key === 'Backspace') {
+                    backspace();
+                    e.preventDefault();
+                }
+            }
+        });
+        // Musik akan diputar saat tombol pertama kali diklik
+        let musicStarted = false;
+
+        function playMusicOnce() {
+            if (!musicStarted) {
+                const music = document.getElementById('bgMusic');
+                music.play();
+                music.loop = true;
+                musicStarted = true;
+            }
+        }
+
+        // Background image rotator
+        const backgroundImages = ['bg.jpg', 'bg1.jpg', 'bg2.jpg', 'bg3.jpg'];
+        let currentIndex = 0;
+
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % backgroundImages.length;
+            document.body.style.backgroundImage = `url('${backgroundImages[currentIndex]}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.transition = 'background-image 1s ease-in-out';
+        }, 3000);
+
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            if (music.paused) {
+                music.play();
+            } else {
+                music.pause();
+            }
+        }
+
+    </script>
+</body>
+
+</html>

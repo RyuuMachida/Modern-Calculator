@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program Sederhana</title>
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        bodyr { /*ini body untuk pake background linear gradient*/
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(-45deg, #000000, #41428f, #aabde7, #1b2f52);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        body { /*ini body untuk pake background gambar*/
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: url('bg.jpg');
+            background-size: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .calculator {
+            width: 340px;
+            height: auto;
+            background-color: #2c2c2c;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .display {
+            width: 96%;
+            height: 40px;
+            margin-bottom: 10px;
+            text-align: right;
+            padding: 5px;
+            font-size: 20px;
+            color: whitesmoke;
+            background-color: #3a3a3a;
+            user-select: none;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 8px;
+        }
+
+        .button {
+            padding: 18px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #ff9500;
+            border: none;
+            border-radius: 12px;
+            color: black;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .button:hover {
+            background-color: burlywood;
+            transform: scale(1.01);
+            box-shadow: 0 0 10px rgba(43, 35, 35, 0.2);
+        }
+
+        .equal {
+            grid-column: span 4;
+            background-color: #3d85c6;
+        }
+
+        .equal:hover {
+            background-color: #5ca0e6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+        <input type="text" class="display" id="display" disabled>
+        <div class="buttons">
+            <div class="button" onclick="appendToDisplay('7')"><strong>7</strong>  <br> <small>Seven</small></div>
+            <div class="button" onclick="appendToDisplay('8')"><strong>8</strong>  <br> <small>Eight</small></div>
+            <div class="button" onclick="appendToDisplay('9')"><strong>9</strong>  <br> <small>Nine</small></div>
+            <div class="button" onclick="clearDisplay()">C</div>
+            <div class="button" onclick="appendToDisplay('4')"><strong>4</strong> <br> <small>Four</small></div>
+            <div class="button" onclick="appendToDisplay('5')"><strong>5</strong>  <br> <small>Five</small></div>
+            <div class="button" onclick="appendToDisplay('6')"><strong>6</strong>  <br> <small>Six</small></div>
+            <div class="button" onclick="appendToDisplay('*')">×</div>
+            <div class="button" onclick="appendToDisplay('1')"><strong>1</strong>  <br> <small>One</small></div>
+            <div class="button" onclick="appendToDisplay('2')"><strong>2</strong>  <br> <small>Two</small></div>
+            <div class="button" onclick="appendToDisplay('3')"><strong>3</strong>  <br> <small>Three</small></div>
+            <div class="button" onclick="appendToDisplay('/')">÷</div>
+            <div class="button" onclick="appendToDisplay('0')"><strong>0</strong>  <br> <small>Zero</small></div>
+            <div class="button" onclick="appendToDisplay('.')">.</div>
+            <div class="button" onclick="appendToDisplay('+')">+</div>
+            <div class="button" onclick="appendToDisplay('-')">-</div>
+            <div class="button equal" onclick="calculate()">=</div>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+
+        function appendToDisplay(value) {
+            /*mencegah display ( ' X, :, + ' ) jika belum ada angka, kecuali symbol - ( Minus )*/
+            if (display.value === '') {
+                if (value === '*' || value === '/' || value === '+') {
+                    return;
+                }
+            }
+            display.value += value;
+        }
+
+        function clearDisplay() {
+            display.value = '';
+        }
+
+        function calculate() {
+            try {
+                let expression = display.value.replace(/×/g, '*').replace(/÷/g, '/');
+                display.value = eval(expression);
+            } catch (error) {
+                display.value = 'wadooh masuk akal sikit lah😭';
+            }
+        }
+    </script>
+</body>
+
+</html>
