@@ -20,6 +20,7 @@
 
     <!-- Gambar Preview untuk WhatsApp -->
     <meta property="og:image" content="https://modern-calculator-r1hq.vercel.app/previewweb.jpg">
+    <meta property="og:image:secure_url" content="https://modern-calculator-r1hq.vercel.app/previewweb.jpg">
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -109,6 +110,12 @@
             }
         }
 
+        @media (orientation: portrait) {
+            body {
+                background-size: 400% auto;  /* Lebih besar untuk mobile */
+            }
+        }
+        
         bodyr {
             margin: 0;
             padding: 0;
@@ -855,6 +862,7 @@
 
 
 </html>
+
 
 
 
