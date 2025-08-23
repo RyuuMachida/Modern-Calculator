@@ -92,7 +92,8 @@
             background-size: 150%;
             background-position: 0% 50%;
             display: flex;
-            background-repeat: no-repeat;  /* TAMBAH INI */
+            background-repeat: no-repeat;
+            /* TAMBAH INI */
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -111,10 +112,11 @@
 
         @media (orientation: portrait) {
             body {
-                background-size: 400% auto;  /* Lebih besar untuk mobile */
+                background-size: 400% auto;
+                /* Lebih besar untuk mobile */
             }
         }
-        
+
         bodyr {
             margin: 0;
             padding: 0;
@@ -251,7 +253,6 @@
             font-style: italic;
         }
 
-
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -288,6 +289,15 @@
 
         .equal:hover {
             background-color: #5ca0e6;
+        }
+
+        .backspace {
+            grid-column: span 2;
+            background-color: #ff6b6b !important;
+        }
+
+        .backspace:hover {
+            background-color: #ff5252 !important;
         }
 
         /* Popup Riwayat di dalam kalkulator */
@@ -392,13 +402,16 @@
             </div>
             <input type="number" class="currency-input" id="idrInput" placeholder="Masukkan nilai IDR"
                 oninput="convertCurrency()">
-            <input type="text" class="currency-result" id="usdResult" placeholder="Hasil USD" readonly>
+            <input type="text" class="currency-result" id="usdResult" placeholder="Hasil $Dollar" readonly>
             <div class="exchange-rate-info" id="exchangeRateInfo">
                 1 USD = 15,500 IDR
             </div>
         </div>
 
         <div class="buttons">
+            <div class="button" onclick="appendToDisplay('(')">(</div>
+            <div class="button" onclick="appendToDisplay(')')">)</div>
+            <div class="button backspace" onclick="backspaceDisplay()">⌫ Backspace</div>
             <div class="button" onclick="appendToDisplay('7')"><strong>7</strong> <br> <small>Seven</small></div>
             <div class="button" onclick="appendToDisplay('8')"><strong>8</strong> <br> <small>Eight</small></div>
             <div class="button" onclick="appendToDisplay('9')"><strong>9</strong> <br> <small>Nine</small></div>
@@ -426,6 +439,23 @@
     </div>
 
     <audio id="bgMusic"></audio>
+    <audio id="clickSound" preload="auto">
+        <source src="click.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound" preload="auto">
+        <source src="errorsound.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="trillionSound" preload="auto">
+        <source src="trillion.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="rickrollSound" preload="auto">
+        <source src="713701.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="brainrotSound" preload="auto">
+        <source src="brainrot.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
         const display = document.getElementById('display');
@@ -447,11 +477,13 @@
                 labelRight.textContent = 'USD (Dollar)';
                 toggleBtn.textContent = 'Tukar ke USD → IDR';
                 idrInput.placeholder = 'Masukkan nilai IDR';
+                usdResult.placeholder = 'Hasil Dollar';
             } else {
                 labelLeft.textContent = 'USD (Dollar)';
                 labelRight.textContent = 'IDR (Rupiah)';
                 toggleBtn.textContent = 'Tukar ke IDR → USD';
                 idrInput.placeholder = 'Masukkan nilai USD';
+                usdResult.placeholder = 'Hasil Rupiah';
             }
 
             // Clear input & result
@@ -515,6 +547,7 @@
         }
 
         function appendToDisplay(value) {
+            playClickSound();
             playMusicOnce();
 
             if (currencyVisible) {
@@ -584,7 +617,9 @@
         }
 
         function calculate() {
-            // Cegah calculate jika belum bisa (belum ada angka setelah operator)
+            playClickSound();
+
+            // Cegah calculate jika belum bisa
             if (!canCalculate) {
                 return;
             }
@@ -603,7 +638,37 @@
                     .replace(/\./g, '')  // Hapus titik ribuan
                     .replace(/,/g, '.');  // Ganti koma desimal dengan titik
 
+                // CHECK DIVISION BY ZERO DULU SEBELUM EVAL!
+                if (checkDivisionByZero(expression)) {
+                    // Play brainrot sound
+                    playBrainrotSound();
+
+                    // Display pesan brainrot
+                    display.value = 'bro divide by 0🤡';
+                    // Reset flags
+                    canCalculate = false;
+                    lastInput = '';
+                    justCalculated = false;
+
+                    return; // STOP execution di sini
+                }
+
                 let result = eval(expression);
+
+                // Double check kalau hasil tetep infinity (backup)
+                if (result === Infinity || result === -Infinity) {
+                    playBrainrotSound();
+                    display.value = 'hell nah, lu membagi dengan 0? SMART ! 🧠💀';
+                    canCalculate = false;
+                    lastInput = '';
+                    justCalculated = false;
+                    return;
+                }
+
+                // Check untuk easter eggs dan special effects
+                checkSpecialResults(expression, result);
+
+                // ... sisa kode sama seperti sebelumnya
 
                 if (display.value !== '') {
                     historyData.unshift(`${display.value} = ${formatNumberIndonesian(result.toString().replace('.', ','))}`);
@@ -617,15 +682,54 @@
                 justCalculated = true;
                 canCalculate = false;
                 lastInput = '';
+
             } catch (error) {
-                display.value = 'I love You 💗';
+                // Pause background music dulu
+                const bgMusic = document.getElementById('bgMusic');
+                const wasPaused = bgMusic.paused;
+                bgMusic.pause();
+
+                // Play error sound
+                playErrorSound();
+
+                // Resume background music setelah error sound selesai
+                const errorSound = document.getElementById('errorSound');
+                errorSound.addEventListener('ended', function () {
+                    if (!wasPaused && isPlaying) {
+                        setTimeout(() => {
+                            bgMusic.play();
+                        }, 500); // Delay 500ms sebelum musik balik
+                    }
+                }, { once: true }); // { once: true } biar event listener tidak menumpuk
+
+                display.value = 'Error Bruh😭';
                 canCalculate = false;
                 lastInput = '';
                 justCalculated = false;
             }
         }
 
+        function checkDivisionByZero(expression) {
+            // Pattern untuk deteksi pembagian dengan 0
+            // Regex untuk mendeteksi: [angka]/0 atau [angka]÷0
+            const divisionByZeroPattern = /(\d+(?:\.\d+)?)\s*[\/÷]\s*0(?!\d)/g;
+
+            // Check juga untuk hasil perhitungan yang menghasilkan infinity
+            try {
+                let testResult = eval(expression.replace(/÷/g, '/'));
+                if (testResult === Infinity || testResult === -Infinity || isNaN(testResult)) {
+                    return true;
+                }
+            } catch (e) {
+                return false;
+            }
+
+            // Check pattern langsung di expression
+            return divisionByZeroPattern.test(expression);
+        }
+
         function clearDisplay() {
+            playClickSound();
             if (currencyVisible) {
                 idrInput.value = '';
                 usdResult.value = '';
@@ -638,7 +742,39 @@
             }
         }
 
+        function backspaceDisplay() {
+            playClickSound();
+            if (!currencyVisible) {
+                if (display.value.length > 0) {
+                    // Hapus karakter terakhir dari display
+                    let currentValue = display.value.slice(0, -1);
+
+                    // Jika setelah dihapus masih ada nilai, format ulang
+                    if (currentValue.length > 0) {
+                        // Hapus format lama untuk mendapatkan raw value
+                        let rawValue = currentValue.replace(/×/g, '*').replace(/÷/g, '/').replace(/\./g, '');
+                        // Format ulang
+                        display.value = formatNumberIndonesian(rawValue).replace(/\*/g, '×').replace(/\//g, '÷');
+
+                        // Update lastInput dan flags
+                        let cleanValue = rawValue.replace(/[,*\/+-]/g, '');
+                        if (cleanValue.length > 0) {
+                            canCalculate = true;
+                        }
+                        lastInput = rawValue.slice(-1);
+                    } else {
+                        display.value = '';
+                        canCalculate = false;
+                        lastInput = '';
+                    }
+
+                    justCalculated = false;
+                }
+            }
+        }
+
         function toggleHistory() {
+            playClickSound();
             historyPopup.style.display = (historyPopup.style.display === 'block') ? 'none' : 'block';
             // Hide currency display when showing history
             if (historyPopup.style.display === 'block') {
@@ -649,6 +785,7 @@
         }
 
         function toggleCurrency() {
+            playClickSound();
             currencyVisible = !currencyVisible;
             if (currencyVisible) {
                 // Tampilkan kurs tukar, sembunyikan display kalkulator
@@ -676,6 +813,7 @@
 
         // Tambahan: fungsi backspace untuk kurs tukar
         function backspace() {
+            playClickSound();
             if (currencyVisible) {
                 idrInput.value = idrInput.value.slice(0, -1);
                 convertCurrency();
@@ -684,6 +822,7 @@
 
         // Event listener untuk keyboard
         document.addEventListener('keydown', function (e) {
+            playClickSound();
             if (currencyVisible) {
                 if (e.key >= '0' && e.key <= '9') {
                     idrInput.value += e.key;
@@ -697,6 +836,42 @@
                     e.preventDefault();
                 } else if (e.key === 'Backspace') {
                     backspace();
+                    e.preventDefault();
+                }
+            } else {
+                // Handler untuk kalkulator biasa
+                if (e.key >= '0' && e.key <= '9') {
+                    appendToDisplay(e.key);
+                    e.preventDefault();
+                } else if (e.key === ',' || e.key === '.') {
+                    appendToDisplay(',');
+                    e.preventDefault();
+                } else if (e.key === '+') {
+                    appendToDisplay('+');
+                    e.preventDefault();
+                } else if (e.key === '-') {
+                    appendToDisplay('-');
+                    e.preventDefault();
+                } else if (e.key === '*') {
+                    appendToDisplay('*');
+                    e.preventDefault();
+                } else if (e.key === '/') {
+                    appendToDisplay('/');
+                    e.preventDefault();
+                } else if (e.key === '(') {
+                    appendToDisplay('(');
+                    e.preventDefault();
+                } else if (e.key === ')') {
+                    appendToDisplay(')');
+                    e.preventDefault();
+                } else if (e.key === 'Enter' || e.key === '=') {
+                    calculate();
+                    e.preventDefault();
+                } else if (e.key === 'Backspace') {
+                    backspaceDisplay();
+                    e.preventDefault();
+                } else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') {
+                    clearDisplay();
                     e.preventDefault();
                 }
             }
@@ -715,7 +890,7 @@
         changeBackground();
 
         // Change background every 3 seconds (1 detik sebelum animasi selesai)
-        setInterval(changeBackground, 3000);
+        setInterval(changeBackground, 4000);
 
         // Daftar lagu dengan metadata
         const songs = [
@@ -773,6 +948,68 @@
             }
         }
 
+        function playErrorSound() {
+            const errorSound = document.getElementById('errorSound');
+            errorSound.currentTime = 0;
+            errorSound.volume = 0.5;
+            errorSound.play().catch(e => {
+                console.log('Error sound disabled');
+            });
+        }
+
+        function playTrillionSound() {
+            const trillionSound = document.getElementById('trillionSound');
+            trillionSound.currentTime = 0;
+            trillionSound.volume = 0.6;
+            trillionSound.play().catch(e => {
+                console.log('Trillion sound disabled');
+            });
+        }
+
+        function playRickrollSound() {
+            // Pause background music dulu
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.pause();
+
+            const rickrollSound = document.getElementById('rickrollSound');
+            rickrollSound.currentTime = 0;
+            rickrollSound.volume = 0.8;
+            rickrollSound.play().catch(e => {
+                console.log('Rickroll sound disabled');
+            });
+
+            // Resume background music setelah rickroll selesai
+            rickrollSound.addEventListener('ended', function () {
+                if (isPlaying) {
+                    bgMusic.play();
+                }
+            });
+        }
+
+        function checkSpecialResults(expression, result) {
+            // Easter egg untuk 713701
+            if (expression === '713701') {
+                playRickrollSound();
+                setTimeout(() => {
+                    alert('🎵 Never gonna give you up! 🎵\n\nYou just got Rick Rolled! 😄');
+                }, 1000);
+                return;
+            }
+
+            // Check untuk hasil triliun (12 digit atau lebih)
+            let resultString = Math.abs(result).toString();
+            if (resultString.length >= 13 || Math.abs(result) >= 1000000000000) {
+                playTrillionSound();
+                // Tambah confetti effect (opsional)
+                createConfettiEffect();
+                return;
+            }
+
+            // Check untuk hasil besar lainnya (milyar)
+            if (resultString.length >= 10 || Math.abs(result) >= 1000000000) {
+            }
+        }
+
         function nextSong() {
             currentSongIndex = (currentSongIndex + 1) % songs.length;
             loadSong(currentSongIndex);
@@ -816,6 +1053,37 @@
             }
         }
 
+        function playClickSound() {
+            const clickSound = document.getElementById('clickSound');
+            clickSound.currentTime = 0; // Reset ke awal
+            clickSound.volume = 0.3; // Volume 30%
+            clickSound.play().catch(e => {
+                // Jika gagal play sound, tidak masalah
+                console.log('Sound disabled');
+            });
+        }
+
+        function playBrainrotSound() {
+            // Pause background music dulu biar brainrot lebih kerasa
+            const bgMusic = document.getElementById('bgMusic');
+            const wasPaused = bgMusic.paused;
+            bgMusic.pause();
+
+            const brainrotSound = document.getElementById('brainrotSound');
+            brainrotSound.currentTime = 0;
+            brainrotSound.volume = 0.9; // Volume tinggi biar ngagetin
+            brainrotSound.play().catch(e => {
+                console.log('Brainrot sound disabled');
+            });
+
+            // Resume background music setelah brainrot selesai
+            brainrotSound.addEventListener('ended', function () {
+                if (!wasPaused && isPlaying) {
+                    bgMusic.play();
+                }
+            }, { once: true }); // { once: true } biar event listener tidak menumpuk
+        }
+
         function updateMediaSession() {
             if ('mediaSession' in navigator) {
                 const currentSong = songs[currentSongIndex];
@@ -855,17 +1123,6 @@
                 });
             }
         }
-
     </script>
 </body>
-
-
 </html>
-
-
-
-
-
-
-
-
